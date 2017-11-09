@@ -38,6 +38,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice.State;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
@@ -361,6 +362,12 @@ public final class BtLEQueue {
             }
 
             switch (newState) {
+                case BluetoothProfile.STATE_DISCONNECTING:
+                    break;
+                case BluetoothProfile.STATE_CONNECTING:
+                    LOG.info("Connecting to GATT server...");
+                    setDeviceConnectionState(State.CONNECTING);
+                    break;
                 case BluetoothProfile.STATE_CONNECTED:
                     LOG.info("Connected to GATT server.");
                     setDeviceConnectionState(State.CONNECTED);
@@ -370,19 +377,16 @@ public final class BtLEQueue {
                         LOG.info("Using cached services, skipping discovery");
                         onServicesDiscovered(gatt, BluetoothGatt.GATT_SUCCESS);
                     } else {
-                        LOG.info("Attempting to start service discovery:" +
-                                gatt.discoverServices());
+                        LOG.info("Attempting to start service discovery:" + gatt.discoverServices());
                     }
+                    GBApplication.app().onCallback(1);
                     break;
                 case BluetoothProfile.STATE_DISCONNECTED:
                     LOG.info("Disconnected from GATT server.");
                     handleDisconnected(status);
-                    break;
-                case BluetoothProfile.STATE_CONNECTING:
-                    LOG.info("Connecting to GATT server...");
-                    setDeviceConnectionState(State.CONNECTING);
-                    break;
-                default:
+                    if(status != BluetoothGatt.GATT_SUCCESS) {
+                        GBApplication.app().onCallback(1);
+                    }
                     break;
             }
         }

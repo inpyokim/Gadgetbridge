@@ -333,11 +333,11 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                         GB.toast(this, getString(R.string.cannot_connect, e.getMessage()), Toast.LENGTH_SHORT, GB.ERROR, e);
                         setDeviceSupport(null);
                     }
+
                 } else if (mGBDevice != null) {
                     // send an update at least
                     mGBDevice.sendDeviceUpdateIntent(this);
                 }
-                GBApplication.app().onCallback(1);
                 break;
             case ACTION_REQUEST_DEVICEINFO:
                 mGBDevice.sendDeviceUpdateIntent(this);
