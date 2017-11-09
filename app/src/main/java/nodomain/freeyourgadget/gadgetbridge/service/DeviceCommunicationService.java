@@ -794,24 +794,23 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         @Override
         public void startLiveActivity() throws RemoteException {
             LOG.debug("MiBandBinder.startLiveActivity()");
-            GBApplication.app().isLiveActivity = true;
             GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
             GBApplication.deviceService().onEnableRealtimeSteps(true);
+            GBApplication.app().startActivityPulse();
         }
 
         @Override
         public void stopLiveActivity() throws RemoteException {
             LOG.debug("MiBandBinder.stopLiveActivity()");
-            GBApplication.app().isLiveActivity = false;
             GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(false);
             GBApplication.deviceService().onEnableRealtimeSteps(false);
+            GBApplication.app().stopActivityPulse();
         }
 
         @Override
         public boolean registerMiBandCallback(MiBandCallback callback) throws RemoteException {
             LOG.debug("MiBandBinder.registerMiBandCallback()");
             callbackList.register(callback);
-            GBApplication.app().setCallbackList(callbackList);
             return false;
         }
 
@@ -826,6 +825,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        GBApplication.app().setCallbackList(callbackList);
         return binder;
     }
 }

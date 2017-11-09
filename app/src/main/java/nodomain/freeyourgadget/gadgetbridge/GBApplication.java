@@ -47,6 +47,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -609,8 +611,6 @@ public class GBApplication extends Application {
         this.callbackList = callbackList;
     }
 
-    public boolean isLiveActivity;
-
     public void onCallback(int what, int val) {
         GB.log("onCallback() callbackList="+callbackList, GB.INFO, null);
 
@@ -631,18 +631,10 @@ public class GBApplication extends Application {
                                 callback.onDisconnected();
                                 break;
                             case 3:
-                                if(isLiveActivity) {
-                                    GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
-                                    GBApplication.deviceService().onEnableRealtimeSteps(true);
-                                    callback.onLiveSteps(val);
-                                }
+                                callback.onLiveSteps(val);
                                 break;
                             case 4:
-                                if(isLiveActivity) {
-                                    GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
-                                    GBApplication.deviceService().onEnableRealtimeSteps(true);
-                                    callback.onLivePuls(val);
-                                }
+                                callback.onLivePuls(val);
                                 break;
                             default:
                                 break;
@@ -653,6 +645,26 @@ public class GBApplication extends Application {
                 }
             }
             callbackList.finishBroadcast();
+        }
+    }
+
+    ScheduledExecutorService pulseScheduler;
+
+    public void startActivityPulse() {
+        pulseScheduler = Executors.newSingleThreadScheduledExecutor();
+        pulseScheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                // have to enable it again and again to keep it measureing
+                GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
+            }
+        }, 0, 1000, TimeUnit.MILLISECONDS);
+    }
+
+    public void stopActivityPulse() {
+        if (pulseScheduler != null) {
+            pulseScheduler.shutdownNow();
+            pulseScheduler = null;
         }
     }
 
