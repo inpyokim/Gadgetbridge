@@ -1058,13 +1058,16 @@ public class MiBand2Support extends AbstractBTLEDeviceSupport {
     }
 
     private void handleHeartrate(byte[] value) {
+        //LOG.debug("realtime heart raw: " + value.length);
+
         if (value.length == 2 && value[0] == 0) {
             int hrValue = (value[1] & 0xff);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("heart rate: " + hrValue);
-            }
+            //if (LOG.isDebugEnabled()) {
+                LOG.debug("realtime heart rate: " + hrValue);
+            //}
             RealtimeSamplesSupport realtimeSamplesSupport = getRealtimeSamplesSupport();
             realtimeSamplesSupport.setHeartrateBpm(hrValue);
+            GBApplication.app().onCallback(4, hrValue);
             if (!realtimeSamplesSupport.isRunning()) {
                 // single shot measurement, manually invoke storage and result publishing
                 realtimeSamplesSupport.triggerCurrentSample();
@@ -1081,10 +1084,11 @@ public class MiBand2Support extends AbstractBTLEDeviceSupport {
         if (value.length == 13) {
             byte[] stepsValue = new byte[] {value[1], value[2]};
             int steps = BLETypeConversions.toUint16(stepsValue);
-            if (LOG.isDebugEnabled()) {
+            //if (LOG.isDebugEnabled()) {
                 LOG.debug("realtime steps: " + steps);
-            }
+            //}
             getRealtimeSamplesSupport().setSteps(steps);
+            GBApplication.app().onCallback(3, steps);
         } else {
             LOG.warn("Unrecognized realtime steps value: " + Logging.formatBytes(value));
         }

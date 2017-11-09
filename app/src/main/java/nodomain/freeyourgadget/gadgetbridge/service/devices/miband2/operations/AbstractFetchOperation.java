@@ -118,7 +118,7 @@ public abstract class AbstractFetchOperation extends AbstractMiBand2Operation {
     protected void handleActivityFetchFinish() {
         operationFinished();
         unsetBusy();
-        GBApplication.app().onCallback(0);
+        GBApplication.app().onCallback(0, 0);
     }
 
     /**

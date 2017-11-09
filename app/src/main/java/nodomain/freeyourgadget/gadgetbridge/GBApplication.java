@@ -609,7 +609,9 @@ public class GBApplication extends Application {
         this.callbackList = callbackList;
     }
 
-    public void onCallback(int what) {
+    public boolean isLiveActivity;
+
+    public void onCallback(int what, int val) {
         GB.log("onCallback() callbackList="+callbackList, GB.INFO, null);
 
         if (callbackList != null) {
@@ -627,6 +629,20 @@ public class GBApplication extends Application {
                                 break;
                             case 2:
                                 callback.onDisconnected();
+                                break;
+                            case 3:
+                                if(isLiveActivity) {
+                                    GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
+                                    GBApplication.deviceService().onEnableRealtimeSteps(true);
+                                    callback.onLiveSteps(val);
+                                }
+                                break;
+                            case 4:
+                                if(isLiveActivity) {
+                                    GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
+                                    GBApplication.deviceService().onEnableRealtimeSteps(true);
+                                    callback.onLivePuls(val);
+                                }
                                 break;
                             default:
                                 break;

@@ -379,13 +379,13 @@ public final class BtLEQueue {
                     } else {
                         LOG.info("Attempting to start service discovery:" + gatt.discoverServices());
                     }
-                    GBApplication.app().onCallback(1);
+                    GBApplication.app().onCallback(1, 0);
                     break;
                 case BluetoothProfile.STATE_DISCONNECTED:
                     LOG.info("Disconnected from GATT server.");
                     handleDisconnected(status);
                     if(status != BluetoothGatt.GATT_SUCCESS) {
-                        GBApplication.app().onCallback(1);
+                        GBApplication.app().onCallback(1, 0);
                     }
                     break;
             }
@@ -472,13 +472,13 @@ public final class BtLEQueue {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
-            if (LOG.isDebugEnabled()) {
+//            if (LOG.isDebugEnabled()) {
                 String content = "";
                 for (byte b : characteristic.getValue()) {
                     content += String.format(" 0x%1x", b);
                 }
                 LOG.debug("characteristic changed: " + characteristic.getUuid() + " value: " + content);
-            }
+//            }
             if (!checkCorrectGattInstance(gatt, "characteristic changed")) {
                 return;
             }

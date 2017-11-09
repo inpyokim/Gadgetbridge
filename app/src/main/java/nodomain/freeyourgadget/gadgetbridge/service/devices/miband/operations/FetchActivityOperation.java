@@ -193,7 +193,7 @@ public class FetchActivityOperation extends AbstractMiBand1Operation {
         activityStruct = null;
         operationFinished();
         unsetBusy();
-        GBApplication.app().onCallback(0);
+        GBApplication.app().onCallback(0, 0);
     }
 
     /**

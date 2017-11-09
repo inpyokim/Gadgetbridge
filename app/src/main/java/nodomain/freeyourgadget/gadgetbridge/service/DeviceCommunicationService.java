@@ -422,7 +422,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     mGBDevice.sendDeviceUpdateIntent(this);
                 }
                 mDeviceSupport = null;
-                GBApplication.app().onCallback(2);
+                GBApplication.app().onCallback(2, 0);
                 break;
             }
             case ACTION_FIND_DEVICE: {
@@ -794,11 +794,17 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         @Override
         public void startLiveActivity() throws RemoteException {
             LOG.debug("MiBandBinder.startLiveActivity()");
+            GBApplication.app().isLiveActivity = true;
+            GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
+            GBApplication.deviceService().onEnableRealtimeSteps(true);
         }
 
         @Override
         public void stopLiveActivity() throws RemoteException {
             LOG.debug("MiBandBinder.stopLiveActivity()");
+            GBApplication.app().isLiveActivity = false;
+            GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(false);
+            GBApplication.deviceService().onEnableRealtimeSteps(false);
         }
 
         @Override
