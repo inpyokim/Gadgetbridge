@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="nodomain.freeyourgadget.gadgetbridge">
+    package="nodomain.freeyourgadget.gadgetbridge"
+    android:sharedUserId="com.sdc.pid">
 
     <!--
         Comment in for testing Pebble Emulator
@@ -296,7 +297,8 @@
             </intent-filter>
         </service>
         <service android:name=".service.NotificationCollectorMonitorService" />
-        <service android:name=".service.DeviceCommunicationService" />
+
+        <service android:name=".service.DeviceCommunicationService" android:exported="true"/>
 
         <receiver
             android:name=".externalevents.WeatherNotificationReceiver"

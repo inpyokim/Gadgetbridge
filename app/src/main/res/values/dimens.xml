@@ -12,4 +12,12 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="page_width">1920px</dimen>
+    <dimen name="page_height">1920px</dimen>
+    <dimen name="layout_width">1080px</dimen>
+    <dimen name="layout_height">1920px</dimen>
+    <dimen name="page_left_padding">420px</dimen>
+    <dimen name="page_right_padding">420px</dimen>
+    <dimen name="page_top_margin">-420px</dimen>
 </resources>

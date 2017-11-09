@@ -72,7 +72,7 @@ public class ControlCenterv2 extends AppCompatActivity
     }
 
     private DeviceManager deviceManager;
-    private ImageView background;
+    //private ImageView background;
 
     private List<GBDevice> deviceList;
     private GBDeviceAdapterv2 mGBDeviceAdapter;
@@ -130,7 +130,7 @@ public class ControlCenterv2 extends AppCompatActivity
         deviceListView = (RecyclerView) findViewById(R.id.deviceListView);
         deviceListView.setHasFixedSize(true);
         deviceListView.setLayoutManager(new LinearLayoutManager(this));
-        background = (ImageView) findViewById(R.id.no_items_bg);
+        //background = (ImageView) findViewById(R.id.no_items_bg);
 
         deviceList = deviceManager.getDevices();
         mGBDeviceAdapter = new GBDeviceAdapterv2(this, deviceList);
@@ -284,11 +284,11 @@ public class ControlCenterv2 extends AppCompatActivity
 
     private void refreshPairedDevices() {
         List<GBDevice> deviceList = deviceManager.getDevices();
-        if (deviceList.isEmpty()) {
-            background.setVisibility(View.VISIBLE);
-        } else {
-            background.setVisibility(View.INVISIBLE);
-        }
+//        if (deviceList.isEmpty()) {
+//            background.setVisibility(View.VISIBLE);
+//        } else {
+//            background.setVisibility(View.INVISIBLE);
+//        }
 
         mGBDeviceAdapter.notifyDataSetChanged();
     }

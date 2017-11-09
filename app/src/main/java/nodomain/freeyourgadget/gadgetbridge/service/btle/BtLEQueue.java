@@ -382,6 +382,8 @@ public final class BtLEQueue {
                     LOG.info("Connecting to GATT server...");
                     setDeviceConnectionState(State.CONNECTING);
                     break;
+                default:
+                    break;
             }
         }
 

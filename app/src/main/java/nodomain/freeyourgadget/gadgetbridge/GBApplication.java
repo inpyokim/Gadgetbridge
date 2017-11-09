@@ -31,11 +31,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION;
+import android.os.RemoteCallbackList;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract.PhoneLookup;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.TypedValue;
+
+import com.sdc.pid.mibandservice.MiBandCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,7 +75,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 public class GBApplication extends Application {
     // Since this class must not log to slf4j, we use plain android.util.Log
     private static final String TAG = "GBApplication";
-    public static final String DATABASE_NAME = "Gadgetbridge";
+    public static final String DATABASE_NAME = "pid.health.db";
 
     private static GBApplication context;
     private static final Lock dbLock = new ReentrantLock();
@@ -591,4 +595,49 @@ public class GBApplication extends Application {
     public static Locale getLanguage() {
         return language;
     }
+
+
+
+
+    private RemoteCallbackList<MiBandCallback> callbackList;
+
+    public RemoteCallbackList<MiBandCallback> getCallbackList() {
+        return callbackList;
+    }
+
+    public void setCallbackList(RemoteCallbackList<MiBandCallback> callbackList) {
+        this.callbackList = callbackList;
+    }
+
+    public void onCallback(int what) {
+        GB.log("onCallback() callbackList="+callbackList, GB.INFO, null);
+
+        if (callbackList != null) {
+            int count = callbackList.beginBroadcast();
+            for (int i = 0; i < count; i++) {
+                try {
+                    MiBandCallback callback = callbackList.getBroadcastItem(i);
+                    if (callback != null) {
+                        switch (what) {
+                            case 0:
+                                callback.onFetchData();
+                                break;
+                            case 1:
+                                callback.onConnected();
+                                break;
+                            case 2:
+                                callback.onDisconnected();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            callbackList.finishBroadcast();
+        }
+    }
+
 }

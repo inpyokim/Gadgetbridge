@@ -31,15 +31,21 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
+import com.sdc.pid.mibandservice.MiBandBinder;
+import com.sdc.pid.mibandservice.MiBandCallback;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -331,6 +337,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     // send an update at least
                     mGBDevice.sendDeviceUpdateIntent(this);
                 }
+                GBApplication.app().onCallback(1);
                 break;
             case ACTION_REQUEST_DEVICEINFO:
                 mGBDevice.sendDeviceUpdateIntent(this);
@@ -415,6 +422,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     mGBDevice.sendDeviceUpdateIntent(this);
                 }
                 mDeviceSupport = null;
+                GBApplication.app().onCallback(2);
                 break;
             }
             case ACTION_FIND_DEVICE: {
@@ -722,11 +730,6 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (GBPrefs.AUTO_RECONNECT.equals(key)) {
             boolean autoReconnect = getGBPrefs().getAutoReconnect();
@@ -750,5 +753,73 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
 
     public GBDevice getGBDevice() {
         return mGBDevice;
+    }
+
+
+    final RemoteCallbackList<MiBandCallback> callbackList = new RemoteCallbackList<MiBandCallback>();
+
+    MiBandBinder.Stub binder = new MiBandBinder.Stub() {
+
+        @Override
+        public void connect() throws RemoteException {
+            LOG.debug("MiBandBinder.connect()");
+
+            List<GBDevice> gbDeviceList =  GBApplication.app().getDeviceManager().getDevices();
+            if(gbDeviceList != null && gbDeviceList.size() > 0) {
+                GBApplication.deviceService().connect(gbDeviceList.get(0));
+            }
+        }
+
+        @Override
+        public boolean isConnected() throws RemoteException {
+            boolean connected = DeviceCommunicationService.this.isConnected();
+            LOG.debug("MiBandBinder.isConnected()="+connected);
+            return connected;
+        }
+
+        @Override
+        public void disConnect() throws RemoteException {
+            LOG.debug("MiBandBinder.disConnect()");
+            GBApplication.deviceService().disconnect();
+        }
+
+        @Override
+        public void fetchData() throws RemoteException {
+            LOG.debug("MiBandBinder.fetchData()");
+            if(mDeviceSupport != null) {
+                mDeviceSupport.onFetchActivityData();
+            }
+        }
+
+        @Override
+        public void startLiveActivity() throws RemoteException {
+            LOG.debug("MiBandBinder.startLiveActivity()");
+        }
+
+        @Override
+        public void stopLiveActivity() throws RemoteException {
+            LOG.debug("MiBandBinder.stopLiveActivity()");
+        }
+
+        @Override
+        public boolean registerMiBandCallback(MiBandCallback callback) throws RemoteException {
+            LOG.debug("MiBandBinder.registerMiBandCallback()");
+            callbackList.register(callback);
+            GBApplication.app().setCallbackList(callbackList);
+            return false;
+        }
+
+        @Override
+        public boolean unregisterMiBandCallback(MiBandCallback callback) throws RemoteException {
+            LOG.debug("MiBandBinder.unregisterMiBandCallback()");
+            callbackList.unregister(callback);
+            return false;
+        }
+    };
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
     }
 }
