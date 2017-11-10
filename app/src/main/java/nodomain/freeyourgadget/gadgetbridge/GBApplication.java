@@ -658,7 +658,7 @@ public class GBApplication extends Application {
                 // have to enable it again and again to keep it measureing
                 GBApplication.deviceService().onEnableRealtimeHeartRateMeasurement(true);
             }
-        }, 0, 1000, TimeUnit.MILLISECONDS);
+        }, 0, 3000, TimeUnit.MILLISECONDS);
     }
 
     public void stopActivityPulse() {

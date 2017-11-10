@@ -194,10 +194,10 @@ public class ControlCenterv2 extends AppCompatActivity
             checkAndRequestPermissions();
         }
 
-        ChangeLog cl = createChangeLog();
-        if (cl.isFirstRun()) {
-            cl.getLogDialog().show();
-        }
+//        ChangeLog cl = createChangeLog();
+//        if (cl.isFirstRun()) {
+//            cl.getLogDialog().show();
+//        }
 
         GBApplication.deviceService().start();
 
