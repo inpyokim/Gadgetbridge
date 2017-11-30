@@ -651,7 +651,9 @@ public class GBApplication extends Application {
     ScheduledExecutorService pulseScheduler;
 
     public void startActivityPulse() {
-        pulseScheduler = Executors.newSingleThreadScheduledExecutor();
+        if (pulseScheduler == null) {
+            pulseScheduler = Executors.newSingleThreadScheduledExecutor();
+        }
         pulseScheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {

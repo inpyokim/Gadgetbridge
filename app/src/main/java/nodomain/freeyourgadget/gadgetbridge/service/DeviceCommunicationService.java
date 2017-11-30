@@ -767,6 +767,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             List<GBDevice> gbDeviceList =  GBApplication.app().getDeviceManager().getDevices();
             if(gbDeviceList != null && gbDeviceList.size() > 0) {
                 GBApplication.deviceService().connect(gbDeviceList.get(0));
+            } else {
+                LOG.debug("No Devices !!!");
             }
         }
 

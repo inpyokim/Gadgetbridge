@@ -1142,7 +1142,7 @@ public class MiBand2Support extends AbstractBTLEDeviceSupport {
                         sample.setSteps(getSteps());
 
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("realtime sample: " + sample);
+//                            LOG.debug("realtime sample: " + sample);
                         }
 
                         Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
